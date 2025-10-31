@@ -1,8 +1,14 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package Sudoku;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *
@@ -22,6 +28,10 @@ public class MenuPrincipal {
         VMenuPrinicipal.setLayout(new BorderLayout());
         VMenuPrinicipal.setLocationRelativeTo(null);
 
+        Color azul = new Color(70, 130, 180);
+        Color azulHover = new Color(100, 160, 210); // color al pasar el mouse
+        Color colorTexto = Color.BLACK;
+
         JPanel PMenuPrinicipal = new JPanel(new BorderLayout());
 
         JLabel lblTitulo = new JLabel("SUDOKU", SwingConstants.CENTER);
@@ -32,37 +42,55 @@ public class MenuPrincipal {
         JPanel PBotones = new JPanel(new GridLayout(4, 1, 0, 50));
         PBotones.setBorder(BorderFactory.createEmptyBorder(50, 250, 50, 250));
 
-        JButton BtnFacil = new JButton("FACIL ");
+        JButton BtnFacil = new JButton("FÁCIL ");
         JButton BtnIntermedio = new JButton("INTERMEDIO");
-        JButton BtnDificil = new JButton("DIFICIL");
+        JButton BtnDificil = new JButton("DIFÍCIL");
         JButton BtnSalir = new JButton("Salir");
 
         JButton[] botones = {BtnFacil, BtnIntermedio, BtnDificil, BtnSalir};
-
         Font fuente = new Font("Segoe UI", Font.BOLD, 30);
-        Color fondo = new Color(100, 149, 237);
-        Color colorTexto = Color.black;
 
         for (JButton b : botones) {
             b.setFont(fuente);
-            b.setBackground(fondo);
+            b.setBackground(azul);
             b.setForeground(colorTexto);
             b.setFocusPainted(false);
-            
+
+            // efecto hover
+            b.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    b.setBackground(azulHover);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    b.setBackground(azul);
+                }
+            });
             PBotones.add(b);
         }
 
         BtnFacil.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {}
             new SudokuGUI(45).setVisible(true);
             VMenuPrinicipal.dispose();
         });
 
         BtnIntermedio.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {}
             new SudokuGUI(30).setVisible(true);
             VMenuPrinicipal.dispose();
         });
 
         BtnDificil.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {}
             new SudokuGUI(20).setVisible(true);
             VMenuPrinicipal.dispose();
         });
@@ -75,6 +103,9 @@ public class MenuPrincipal {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
         new MenuPrincipal();
     }
 }

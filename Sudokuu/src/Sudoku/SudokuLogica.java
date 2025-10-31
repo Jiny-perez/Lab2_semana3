@@ -9,24 +9,6 @@ import javax.swing.JOptionPane;
  */
 public class SudokuLogica extends LogicaAbstract {
 
-    
-
-    public int obtener(int f, int c) {
-        return tablero[f][c];
-    }
-
-    public boolean esFijo(int f, int c) {
-        return fijos[f][c];
-    }
-
-    public int getErrores() {
-        return errores;
-    }
-
-    public void resetErrores() {
-        errores = 0;
-    }
-
     public boolean asignar(int f, int c, int v) {
         if (fijos[f][c]) {
             errores++;
@@ -87,7 +69,8 @@ public class SudokuLogica extends LogicaAbstract {
         return true;
     }
 
-    private void llenarTableroCompleto() {
+    @Override
+    protected void llenarTableroCompleto() {
         tablero = new int[9][9];
         Random rand = new Random();
         int f = 0, c = 0;
@@ -162,6 +145,7 @@ public class SudokuLogica extends LogicaAbstract {
         }
     }
 
+    @Override
     public boolean isComplete() {
         for (int f = 0; f < 9; f++) {
             for (int c = 0; c < 9; c++) {

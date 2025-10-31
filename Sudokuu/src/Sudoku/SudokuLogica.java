@@ -59,6 +59,7 @@ public class SudokuLogica extends LogicaAbstract {
         }
     }
 
+    @Override
     public void limpiarEntradas() {
         for (int f = 0; f < 9; f++) {
             for (int c = 0; c < 9; c++) {

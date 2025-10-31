@@ -14,6 +14,7 @@ import java.awt.*;
  * @author ljmc2
  */
 public class SudokuGUI extends JFrame {
+    SudokuLogica sudoku=new SudokuLogica();
     private static final int SIZE = 9;
     private final JTextField[][] cells = new JTextField[SIZE][SIZE];
 
@@ -98,8 +99,24 @@ public class SudokuGUI extends JFrame {
             rightPanel.add(Box.createRigidArea(new Dimension(0, 12)));
         }
 
+        //contador de errores
+        JLabel lblErroresTitulo = new JLabel("Errores:");
+        lblErroresTitulo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        lblErroresTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblErroresValor = new JLabel(String.valueOf(sudoku.getErrores()));
+        lblErroresValor.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        lblErroresValor.setForeground(Color.RED);
+        lblErroresValor.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        rightPanel.add(lblErroresTitulo);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        rightPanel.add(lblErroresValor);
+
         return rightPanel;
     }
+
 
     private JComponent createBottomPanel() {
         JPanel bottomWrapper = new JPanel();

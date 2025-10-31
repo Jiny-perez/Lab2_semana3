@@ -8,11 +8,7 @@ import javax.swing.JOptionPane;
  * @author marye
  */
 public class SudokuLogica extends LogicaAbstract {
-
-    private int[][] tablero = new int[9][9];
-    private int[][] solucion = new int[9][9];
-    private boolean[][] predeterminado = new boolean[9][9];
-
+    
     public int obtener(int row, int col) {
         return tablero[row][col];
     }
@@ -22,7 +18,7 @@ public class SudokuLogica extends LogicaAbstract {
     }
 
     public boolean asignar(int row, int col, int val) {
-        if (fijos[row][col]) {
+        if (predeterminado[row][col]) {
             errores++;
             JOptionPane.showMessageDialog(null, "No puedes cambiar una casilla fija.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return false;

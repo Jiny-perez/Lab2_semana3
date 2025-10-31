@@ -33,9 +33,9 @@ public class MenuPrincipal {
 
         JButton BtnFacil = new JButton("FACIL ");
         JButton BtnIntermedio = new JButton("INTERMEDIO");
-        JButton BtnDificl = new JButton("DIFICIL");
+        JButton BtnDificil = new JButton("DIFICIL");
 
-        JButton[] botones = {BtnFacil, BtnIntermedio, BtnDificl};
+        JButton[] botones = {BtnFacil, BtnIntermedio, BtnDificil};
 
         Font fuente = new Font("Segoe UI", Font.BOLD, 30);
         Color fondo = new Color(100, 149, 237);
@@ -51,15 +51,19 @@ public class MenuPrincipal {
         }
 
         BtnFacil.addActionListener(e -> {
-            new SudokuGUI();
+            new SudokuGUI(45);
             VMenuPrinicipal.dispose();
         });
 
         BtnIntermedio.addActionListener(e -> {
-            new SudokuGUI();
+            new SudokuGUI(30);
             VMenuPrinicipal.dispose();
         });
 
+        BtnDificil.addActionListener(e -> {
+            new SudokuGUI(20);
+            VMenuPrinicipal.dispose();
+        });
         PMenuPrinicipal.add(PBotones, BorderLayout.CENTER);
         VMenuPrinicipal.add(PMenuPrinicipal);
         VMenuPrinicipal.setVisible(true);

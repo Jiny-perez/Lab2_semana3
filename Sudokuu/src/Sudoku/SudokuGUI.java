@@ -299,7 +299,7 @@ public class SudokuGUI extends JFrame {
         btnVaciar.setEnabled(false);
         btnValidar.setEnabled(false);
         btnRendirse.setEnabled(false);
-    }
+    }    
 
     public static void main(String[] args) {
         try {
@@ -310,5 +310,5 @@ public class SudokuGUI extends JFrame {
             SudokuGUI gui = new SudokuGUI(30);
             gui.setVisible(true);
         });
-    }
+}
 }

@@ -5,13 +5,11 @@ package Sudoku;
  * @author ljmc2
  */
 public abstract class LogicaAbstract {
-    public static final int SIZE = 9;
+    protected int[][] tablero = new int[9][9];
+    protected int[][] solucion = new int[9][9];
+    protected boolean[][] fijos = new boolean[9][9];
+    protected int errores = 0;
 
-    public abstract void clear();
-    public abstract boolean set(int row, int col, int val);
-    public abstract int get(int row, int col);
-    public abstract void cargar(int[][] puzzle, int[][] sol);
-    public abstract boolean esValido(int row, int col, int val);
-    public abstract boolean resuelto();
-    public abstract void revelarSolucion();
+    public abstract void limpiarEntradas();
+    
 }

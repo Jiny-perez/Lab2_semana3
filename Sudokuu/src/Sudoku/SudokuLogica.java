@@ -9,10 +9,7 @@ import javax.swing.JOptionPane;
  */
 public class SudokuLogica extends LogicaAbstract {
 
-    private int[][] tablero = new int[9][9];
-    private int[][] solucion = new int[9][9];
-    private boolean[][] fijos = new boolean[9][9];
-    private int errores = 0;
+    
 
     public int obtener(int f, int c) {
         return tablero[f][c];

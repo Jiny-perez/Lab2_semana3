@@ -66,29 +66,30 @@ public class SudokuGUI extends JFrame {
 
                 //funcionalidad enter para ingresar números
                 cell.addActionListener(e -> {
-                    String text = cell.getText().trim();
-                    if (text.isEmpty()) return;
-                    try {
-                        int val = Integer.parseInt(text);
-                        if (val < 1 || val > 9) {
-                            JOptionPane.showMessageDialog(this, "Solo números del 1 al 9.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                            cell.setText("");
-                            return;
-                        }
-                        if (sudoku.asignar(row, col, val)) {
-                            cell.setForeground(Color.BLUE);
-                            if (sudoku.isComplete()) {
-                                JOptionPane.showMessageDialog(this, "¡Felicidades! Sudoku completado.", "Completado", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        } else {
-                            cell.setForeground(Color.RED);
-                        }
-                        actualizarErrores();
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(this, "Entrada no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                String text = cell.getText().trim();
+                if (text.isEmpty()) return;
+                try {
+                    int val = Integer.parseInt(text);
+                    if (val < 1 || val > 9) {
+                        JOptionPane.showMessageDialog(this, "Solo números del 1 al 9.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         cell.setText("");
+                        return;
                     }
-                });
+                    if (sudoku.asignar(row, col, val)) {
+                        cell.setForeground(Color.BLUE);
+                        if (sudoku.isComplete()) {
+                            JOptionPane.showMessageDialog(this, "¡Felicidades! Sudoku completado.", "Completado", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } else {
+                        cell.setForeground(Color.RED);
+                    }
+                    actualizarErrores();
+                    verificarDerrota();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Entrada no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                    cell.setText("");
+                }
+            });
 
                 cells[r][c] = cell;
                 grid.add(cell);
@@ -200,7 +201,7 @@ public class SudokuGUI extends JFrame {
 
         JLabel label = new JLabel("Crear Sudoku Nuevo", SwingConstants.LEFT);
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 50));
 
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         JButton btnFacil = new JButton("Fácil");

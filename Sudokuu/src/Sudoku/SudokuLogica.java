@@ -1,6 +1,7 @@
 package Sudoku;
 
 import java.util.Random;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -29,11 +30,22 @@ public class SudokuLogica extends LogicaAbstract {
         errores = 0;
     }
 
-    public void set(int row, int col, int val) {
-       
+    public boolean set(int row, int col, int val) {
+        if (predeterminado[row][col]) {
+            errores++;
+            JOptionPane.showMessageDialog(null, "No puedes cambiar una casilla fija.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        if (val != Solucion[row][col]) {
+            errores++;
+            JOptionPane.showMessageDialog(null, "Número incorrecto. Intenta otro.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        tablero[row][col] = val;
+        return true;
     }
 
-    public void Clear() {
+    public void clear() {
 
     }
 
@@ -43,6 +55,20 @@ public class SudokuLogica extends LogicaAbstract {
 
     public boolean esValido(int row, int col, int val) {
 
+        for (int i = 0; i < 9; i++) {
+            if (tablero[row][i] == val || tablero[i][col] == val) {
+                return false;
+            }
+        }
+        int sr = (row/ 3) * 3, sc = (col / 3) * 3;
+        for (int i = sr; i < sr + 3; i++) {
+            for (int j = sc; j < sc + 3; j++) {
+                if (tablero[i][j] == val) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public boolean resuelto() {

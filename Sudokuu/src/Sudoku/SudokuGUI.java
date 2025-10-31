@@ -85,7 +85,7 @@ public class SudokuGUI extends JFrame {
                             cell.setForeground(Color.BLUE);
                             cell.setEditable(false);//bloquear celdas correctas
                             if (sudoku.isComplete()) {
-                                JOptionPane.showMessageDialog(this, "Sudoku completado. Crea uno nuevo para seguir jugando.", "Completado", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(this, "Sudoku completado. Regresa al menu para crear uno nuevo.", "Completado", JOptionPane.INFORMATION_MESSAGE);
                             }
                         } else {
                             cell.setForeground(Color.RED);
@@ -208,7 +208,11 @@ public class SudokuGUI extends JFrame {
 
 
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
-        JButton btnMedio = new JButton("Volver");
+        JButton btnMedio = new JButton("Volver al Menú Principal");
+        btnMedio.setPreferredSize(new Dimension(400, 50));
+        btnMedio.setMaximumSize(new Dimension(400, 50));
+
+        btnMedio.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         Font buttonFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
         JButton[] diffButtons = {btnMedio};
@@ -216,7 +220,7 @@ public class SudokuGUI extends JFrame {
         for (JButton b : diffButtons) {
             b.setFont(buttonFont);
             b.setFocusable(false);
-            b.setPreferredSize(new Dimension(110, 35));
+            b.setPreferredSize(new Dimension(250, 50));
             difficultyPanel.add(b);
         }
 
@@ -268,7 +272,7 @@ public class SudokuGUI extends JFrame {
     private void verificarDerrota() {
         if (sudoku.getErrores() >= 10) {
             JOptionPane.showMessageDialog(this,
-                    "Has agotado tus 10 errores. Has perdido el juego. Crea un sudoku nuevo para seguir jugando.",
+                    "Has agotado tus 10 errores. Has perdido el juego. Regresa al menu para crear uno nuevo.",
                     "Derrota",
                     JOptionPane.ERROR_MESSAGE);
             mostrarSolucion();
@@ -277,7 +281,7 @@ public class SudokuGUI extends JFrame {
 
     private void mostrarSolucion() {
         JOptionPane.showMessageDialog(this,
-                "Has perdido.\nAquí tienes la solución del sudoku. Crea uno nuevo para seguir jugando.",
+                "Has perdido.\nAquí tienes la solución del sudoku. Regresa al menu para crear uno nuevo.",
                 "Juego terminado",
                 JOptionPane.INFORMATION_MESSAGE);
 

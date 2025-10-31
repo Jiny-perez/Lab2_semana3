@@ -307,7 +307,7 @@ public class SudokuGUI extends JFrame {
         } catch (Exception ignored) {}
 
         SwingUtilities.invokeLater(() -> {
-            SudokuGUI gui = new SudokuGUI();
+            SudokuGUI gui = new SudokuGUI(30);
             gui.setVisible(true);
         });
     }

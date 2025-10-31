@@ -9,41 +9,43 @@ import javax.swing.JOptionPane;
  */
 public class SudokuLogica extends LogicaAbstract {
 
-    
+    private int[][] tablero = new int[9][9];
+    private int[][] solucion = new int[9][9];
+    private boolean[][] predeterminado = new boolean[9][9];
 
-    public int obtener(int f, int c) {
-        return tablero[f][c];
+    public int obtener(int row, int col) {
+        return tablero[row][col];
     }
 
-    public boolean esFijo(int f, int c) {
-        return fijos[f][c];
+    public boolean isPredeterminado(int row, int col) {
+        return predeterminado[row][col];
     }
 
-    public int getErrores() {
-        return errores;
-    }
-
-    public void resetErrores() {
-        errores = 0;
-    }
-
-    public boolean asignar(int f, int c, int v) {
-        if (fijos[f][c]) {
+    public boolean asignar(int row, int col, int val) {
+        if (fijos[row][col]) {
             errores++;
             JOptionPane.showMessageDialog(null, "No puedes cambiar una casilla fija.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        if (v != solucion[f][c]) {
+        if (val != solucion[row][col]) {
             errores++;
             JOptionPane.showMessageDialog(null, "Número incorrecto. Intenta otro.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        tablero[f][c] = v;
+        tablero[row][col] = val;
+        return true;
+    }
+
+    public boolean remover(int row, int col) {
+        if (predeterminado[row][col]) {
+            JOptionPane.showMessageDialog(null, "No puedes borrar una casilla inicial.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        tablero[row][col] = 0;
         return true;
     }
 
     public void generar(int pistas) {
-        resetErrores();
         llenarTableroCompleto();
 
         for (int i = 0; i < 9; i++) {
@@ -52,34 +54,33 @@ public class SudokuLogica extends LogicaAbstract {
 
         quitarNumeros(81 - pistas);
 
-        for (int f = 0; f < 9; f++) {
-            for (int c = 0; c < 9; c++) {
-                fijos[f][c] = tablero[f][c] != 0;
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                predeterminado[row][col] = tablero[row][col] != 0;
             }
         }
     }
 
-    @Override
     public void limpiarEntradas() {
-        for (int f = 0; f < 9; f++) {
-            for (int c = 0; c < 9; c++) {
-                if (!fijos[f][c]) {
-                    tablero[f][c] = 0;
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (!predeterminado[row][col]) {
+                    tablero[row][col] = 0;
                 }
             }
         }
     }
 
-    public boolean esValido(int f, int c, int v) {
+    public boolean esValido(int row, int col, int val) {
         for (int i = 0; i < 9; i++) {
-            if (tablero[f][i] == v || tablero[i][c] == v) {
+            if (tablero[row][i] == val || tablero[i][col] == val) {
                 return false;
             }
         }
-        int sr = (f / 3) * 3, sc = (c / 3) * 3;
+        int sr = (row / 3) * 3, sc = (col / 3) * 3;
         for (int i = sr; i < sr + 3; i++) {
             for (int j = sc; j < sc + 3; j++) {
-                if (tablero[i][j] == v) {
+                if (tablero[i][j] == val) {
                     return false;
                 }
             }
@@ -89,76 +90,52 @@ public class SudokuLogica extends LogicaAbstract {
 
     private void llenarTableroCompleto() {
         tablero = new int[9][9];
-        Random rand = new Random();
-        int f = 0, c = 0;
+        resolver(0, 0);
+    }
 
-        while (f < 9) {
-            if (tablero[f][c] == 0) {
-                boolean colocado = false;
-                int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private boolean resolver(int f, int c) {
+        if (f == 9) {
+            return true;
+        }
+        int nf = (c == 8) ? f + 1 : f;
+        int nc = (c + 1) % 9;
 
-                for (int i = 0; i < numeros.length; i++) {
-                    int j = rand.nextInt(numeros.length);
-                    int temp = numeros[i];
-                    numeros[i] = numeros[j];
-                    numeros[j] = temp;
+        int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        mezclar(numeros);
+
+        for (int v : numeros) {
+            if (esValido(f, c, v)) {
+                tablero[f][c] = v;
+                if (resolver(nf, nc)) {
+                    return true;
                 }
-
-                for (int i = 0; i < numeros.length; i++) {
-                    int v = numeros[i];
-                    if (esValido(f, c, v)) {
-                        tablero[f][c] = v;
-                        colocado = true;
-                        break;
-                    }
-                }
-
-                if (!colocado) {
-                    tablero[f][c] = 0;
-                    if (c == 0) {
-                        f--;
-                        c = 8;
-                    } else {
-                        c--;
-                    }
-                    continue;
-                }
+                tablero[f][c] = 0;
             }
+        }
+        return false;
+    }
 
-            if (c == 8) {
-                f++;
-                c = 0;
-            } else {
-                c++;
+    private void quitarNumeros(int cantidad) {
+        Random rand = new Random();
+        int removidos = 0;
+
+        while (removidos < cantidad) {
+            int f = rand.nextInt(9);
+            int c = rand.nextInt(9);
+            if (tablero[f][c] != 0) {
+                tablero[f][c] = 0;
+                removidos++;
             }
         }
     }
 
-    private void quitarNumeros(int cuenta) {
+    private void mezclar(int[] arr) {
         Random rand = new Random();
-        int total = 81;
-        int[] indices = new int[total];
-        for (int i = 0; i < total; i++) {
-            indices[i] = i;
-        }
-
-        for (int i = 0; i < total; i++) {
-            int j = rand.nextInt(total);
-            int temp = indices[i];
-            indices[i] = indices[j];
-            indices[j] = temp;
-        }
-
-        int removed = 0;
-        for (int i = 0; i < total && removed < cuenta; i++) {
-            int idx = indices[i];
-            int r = idx / 9, c = idx % 9;
-            int backup = tablero[r][c];
-            if (backup == 0) {
-                continue;
-            }
-
-            tablero[r][c] = 0;
+        for (int i = arr.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
     }
 

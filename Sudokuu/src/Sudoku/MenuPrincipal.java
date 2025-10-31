@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Sudoku;
 
 import javax.swing.*;
@@ -29,7 +25,7 @@ public class MenuPrincipal {
         VMenuPrinicipal.setLocationRelativeTo(null);
 
         Color azul = new Color(70, 130, 180);
-        Color azulHover = new Color(100, 160, 210); // color al pasar el mouse
+        Color azulHover = new Color(100, 160, 210); 
         Color colorTexto = Color.BLACK;
 
         JPanel PMenuPrinicipal = new JPanel(new BorderLayout());
@@ -56,7 +52,6 @@ public class MenuPrincipal {
             b.setForeground(colorTexto);
             b.setFocusPainted(false);
 
-            // efecto hover
             b.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {

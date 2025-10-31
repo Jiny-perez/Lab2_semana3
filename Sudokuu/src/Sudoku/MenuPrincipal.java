@@ -2,6 +2,7 @@ package Sudoku;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 /**
  *
@@ -40,14 +41,14 @@ public class MenuPrincipal {
 
         Font fuente = new Font("Segoe UI", Font.BOLD, 30);
         Color fondo = new Color(100, 149, 237);
-        Color colorTexto = Color.WHITE;
+        Color colorTexto = Color.black;
 
         for (JButton b : botones) {
             b.setFont(fuente);
             b.setBackground(fondo);
             b.setForeground(colorTexto);
             b.setFocusPainted(false);
-
+            
             PBotones.add(b);
         }
 
@@ -65,8 +66,8 @@ public class MenuPrincipal {
             new SudokuGUI(20).setVisible(true);
             VMenuPrinicipal.dispose();
         });
-        
-        BtnSalir.addActionListener(e-> System.exit(0));
+
+        BtnSalir.addActionListener(e -> System.exit(0));
 
         PMenuPrinicipal.add(PBotones, BorderLayout.CENTER);
         VMenuPrinicipal.add(PMenuPrinicipal);

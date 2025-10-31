@@ -206,17 +206,12 @@ public class SudokuGUI extends JFrame {
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 
-        JLabel label = new JLabel("Crear Sudoku Nuevo", SwingConstants.LEFT);
-        label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 50));
 
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
-        JButton btnFacil = new JButton("Fácil");
-        JButton btnMedio = new JButton("Medio");
-        JButton btnDificil = new JButton("Difícil");
+        JButton btnMedio = new JButton("Volver");
 
         Font buttonFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
-        JButton[] diffButtons = {btnFacil, btnMedio, btnDificil};
+        JButton[] diffButtons = {btnMedio};
 
         for (JButton b : diffButtons) {
             b.setFont(buttonFont);
@@ -225,13 +220,12 @@ public class SudokuGUI extends JFrame {
             difficultyPanel.add(b);
         }
 
-        // Eventos de generación
-        btnFacil.addActionListener(e -> activarYGenerar(40));
-        btnMedio.addActionListener(e -> activarYGenerar(30));
-        btnDificil.addActionListener(e -> activarYGenerar(20));
+        btnMedio.addActionListener(e -> {
+            new MenuPrincipal();
+            this.dispose();
+        });
 
         bottomWrapper.add(separator);
-        bottomWrapper.add(label);
         bottomWrapper.add(difficultyPanel);
 
         return bottomWrapper;
@@ -300,15 +294,4 @@ public class SudokuGUI extends JFrame {
         btnValidar.setEnabled(false);
         btnRendirse.setEnabled(false);
     }    
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
-
-        SwingUtilities.invokeLater(() -> {
-            SudokuGUI gui = new SudokuGUI(30);
-            gui.setVisible(true);
-        });
-}
 }

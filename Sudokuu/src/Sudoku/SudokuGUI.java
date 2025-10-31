@@ -23,7 +23,7 @@ public class SudokuGUI extends JFrame {
     private JButton btnRendirse;
     private JButton btnVaciar;
 
-    public SudokuGUI() {
+    public SudokuGUI(int pistas) {
         setTitle("Sudoku");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
@@ -41,8 +41,8 @@ public class SudokuGUI extends JFrame {
         pack();
         setLocationRelativeTo(null);
 
-        //sudoku default en dificultad media
-        generarSudoku(30);
+        //arranca segun opcion de menu principal
+        generarSudoku(pistas);
     }
 
     private JComponent createTopBar() {

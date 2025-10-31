@@ -5,30 +5,13 @@ package Sudoku;
  * @author ljmc2
  */
 public abstract class LogicaAbstract {
-    protected int[][] tablero = new int[9][9];
-    protected int[][] solucion = new int[9][9];
-    protected boolean[][] fijos = new boolean[9][9];
-    protected int errores = 0;
-    
-    public int obtener(int f, int c) {
-        return tablero[f][c];
-    }
+    public static final int SIZE = 9;
 
-    public boolean esFijo(int f, int c) {
-        return fijos[f][c];
-    }
-
-    public int getErrores() {
-        return errores;
-    }
-
-    public void resetErrores() {
-        errores = 0;
-    }
-    
-    protected abstract void llenarTableroCompleto();
-    public abstract boolean esValido(int f, int c, int v);
-    public abstract void generar(int pistas);
-    public abstract void limpiarEntradas();
-    public abstract boolean isComplete();
+    public abstract void clear();
+    public abstract boolean set(int row, int col, int val);
+    public abstract int get(int row, int col);
+    public abstract void cargar(int[][] puzzle, int[][] sol);
+    public abstract boolean esValido(int row, int col, int val);
+    public abstract boolean resuelto();
+    public abstract void revelarSolucion();
 }

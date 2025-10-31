@@ -8,15 +8,17 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-
 /**
  *
  * @author ljmc2
  */
+
 public class SudokuGUI extends JFrame {
-    SudokuLogica sudoku=new SudokuLogica();
     private static final int SIZE = 9;
     private final JTextField[][] cells = new JTextField[SIZE][SIZE];
+    private SudokuLogica sudoku = new SudokuLogica();
+
+    private JLabel lblErroresValor;
 
     public SudokuGUI() {
         setTitle("Sudoku");
@@ -24,7 +26,6 @@ public class SudokuGUI extends JFrame {
         setLayout(new BorderLayout(10, 10));
         setResizable(false);
 
-        //panel principal; cuadricula y botones de utilidad
         JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.add(createGridPanel(), BorderLayout.CENTER);
@@ -59,6 +60,36 @@ public class SudokuGUI extends JFrame {
                 cell.setHorizontalAlignment(SwingConstants.CENTER);
                 cell.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 24));
                 cell.setBorder(computeCellBorder(r, c));
+
+                final int row = r;
+                final int col = c;
+
+                //funcionalidad enter para ingresar números
+                cell.addActionListener(e -> {
+                    String text = cell.getText().trim();
+                    if (text.isEmpty()) return;
+                    try {
+                        int val = Integer.parseInt(text);
+                        if (val < 1 || val > 9) {
+                            JOptionPane.showMessageDialog(this, "Solo números del 1 al 9.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                            cell.setText("");
+                            return;
+                        }
+                        if (sudoku.asignar(row, col, val)) {
+                            cell.setForeground(Color.BLUE);
+                            if (sudoku.isComplete()) {
+                                JOptionPane.showMessageDialog(this, "¡Felicidades! Sudoku completado.", "Completado", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        } else {
+                            cell.setForeground(Color.RED);
+                        }
+                        actualizarErrores();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, "Entrada no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                        cell.setText("");
+                    }
+                });
+
                 cells[r][c] = cell;
                 grid.add(cell);
             }
@@ -99,12 +130,53 @@ public class SudokuGUI extends JFrame {
             rightPanel.add(Box.createRigidArea(new Dimension(0, 12)));
         }
 
-        //contador de errores
+        // 🔸 Vaciar tablero
+        btnVaciar.addActionListener(e -> {
+            sudoku.limpiarEntradas();
+            actualizarTablero();
+        });
+
+        // 🔸 Validar (igual que Enter)
+        btnValidar.addActionListener(e -> {
+            for (int f = 0; f < SIZE; f++) {
+                for (int c = 0; c < SIZE; c++) {
+                    JTextField cell = cells[f][c];
+                    if (!cell.isEditable()) continue;
+
+                    String text = cell.getText().trim();
+                    if (text.isEmpty()) continue;
+
+                    try {
+                        int val = Integer.parseInt(text);
+                        if (val < 1 || val > 9) {
+                            JOptionPane.showMessageDialog(this, "Solo números del 1 al 9.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                            cell.setText("");
+                            continue;
+                        }
+                        if (sudoku.asignar(f, c, val)) {
+                            cell.setForeground(Color.BLUE);
+                        } else {
+                            cell.setForeground(Color.RED);
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, "Entrada no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                        cell.setText("");
+                    }
+                }
+            }
+            actualizarErrores();
+            verificarDerrota();
+        });
+
+        // 🔸 Rendirse
+        btnRendirse.addActionListener(e -> mostrarSolucion());
+
+        // 🔸 Contador de errores
         JLabel lblErroresTitulo = new JLabel("Errores:");
         lblErroresTitulo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         lblErroresTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblErroresValor = new JLabel(String.valueOf(sudoku.getErrores()));
+        lblErroresValor = new JLabel("0");
         lblErroresValor.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
         lblErroresValor.setForeground(Color.RED);
         lblErroresValor.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -123,16 +195,14 @@ public class SudokuGUI extends JFrame {
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        //linea para separar tablero de dificultades
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
 
-        JLabel label = new JLabel("Crear Sudoku Nuevo", SwingConstants.CENTER);
+        JLabel label = new JLabel("Crear Sudoku Nuevo", SwingConstants.LEFT);
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 50));
-        
-        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
+        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         JButton btnFacil = new JButton("Fácil");
         JButton btnMedio = new JButton("Medio");
         JButton btnDificil = new JButton("Difícil");
@@ -147,12 +217,114 @@ public class SudokuGUI extends JFrame {
             difficultyPanel.add(b);
         }
 
+        // Eventos de generación
+        btnFacil.addActionListener(e -> generarSudoku(40));
+        btnMedio.addActionListener(e -> generarSudoku(30));
+        btnDificil.addActionListener(e -> generarSudoku(20));
+
         bottomWrapper.add(separator);
         bottomWrapper.add(label);
         bottomWrapper.add(difficultyPanel);
 
         return bottomWrapper;
     }
+
+    private void generarSudoku(int pistas) {
+        sudoku.generar(pistas);
+        actualizarTablero();
+        actualizarErrores();
+    }
+
+    private void actualizarTablero() {
+        for (int f = 0; f < SIZE; f++) {
+            for (int c = 0; c < SIZE; c++) {
+                int valor = sudoku.obtener(f, c);
+                JTextField cell = cells[f][c];
+                if (valor == 0) {
+                    cell.setText("");
+                    cell.setEditable(!sudoku.isPredeterminado(f, c));
+                    cell.setForeground(Color.BLACK);
+                } else {
+                    cell.setText(String.valueOf(valor));
+                    cell.setEditable(false);
+                    cell.setForeground(Color.BLUE);
+                }
+            }
+        }
+    }
+
+    private void actualizarErrores() {
+        lblErroresValor.setText(String.valueOf(sudoku.getErrores()));
+        if(sudoku.getErrores()==3){
+            sudoku.resetErrores(    );
+        }
+    }
+
+    private void mostrarSolucion() {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Seguro que quieres rendirte y ver la solución?",
+                "Confirmar",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this,
+                    "Has perdido.\nAquí tienes la solución del Sudoku.",
+                    "Juego terminado",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            int[][] solucion = sudoku.getSolucion();
+            for (int f = 0; f < SIZE; f++) {
+                for (int c = 0; c < SIZE; c++) {
+                    cells[f][c].setText(String.valueOf(solucion[f][c]));
+                    cells[f][c].setEditable(false);
+                    cells[f][c].setForeground(new Color(0, 70, 180));
+                }
+            }
+
+            //botones traban tras rendirse
+            JButton btnValidar = obtenerBoton("Validar");
+            JButton btnRendirse = obtenerBoton("Rendirse");
+            if (btnValidar != null) btnValidar.setEnabled(false);
+            if (btnRendirse != null) btnRendirse.setEnabled(false);
+        }
+    }
+    
+    private void verificarDerrota() {
+        if (sudoku.getErrores() >= 3) {
+            JOptionPane.showMessageDialog(this,
+                    "Has cometido 3 errores. Has perdido el juego.",
+                    "Derrota",
+                    JOptionPane.ERROR_MESSAGE);
+            mostrarSolucion();
+        }
+    }
+
+
+    private JButton obtenerBoton(String texto) {
+        for (Component comp : getContentPane().getComponents()) {
+            if (comp instanceof JPanel) {
+                JButton b = buscarEnPanel((JPanel) comp, texto);
+                if (b != null) return b;
+            }
+        }
+        return null;
+    }
+
+    private JButton buscarEnPanel(JPanel panel, String texto) {
+        for (Component comp : panel.getComponents()) {
+            if (comp instanceof JButton && ((JButton) comp).getText().equals(texto)) {
+                return (JButton) comp;
+            } else if (comp instanceof JPanel) {
+                JButton nested = buscarEnPanel((JPanel) comp, texto);
+                if (nested != null) return nested;
+            }
+        }
+        return null;
+    }
+
+
+
 
     public static void main(String[] args) {
         try {

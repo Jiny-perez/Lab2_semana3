@@ -10,16 +10,16 @@ import javax.swing.JOptionPane;
 public class SudokuLogica extends LogicaAbstract {
 
     private int[][] tablero = new int[9][9];
-    private int[][] Solucion = new int[9][9];
-    private boolean[][] predeterminado = new boolean[9][9];
-    private int errores;
+    private int[][] solucion = new int[9][9];
+    private boolean[][] fijos = new boolean[9][9];
+    private int errores = 0;
 
-    public int get(int row, int col) {
-        return tablero[row][col];
+    public int obtener(int f, int c) {
+        return tablero[f][c];
     }
 
-    public boolean isPredeterminado(int row, int col) {
-        return predeterminado[row][col];
+    public boolean esFijo(int f, int c) {
+        return fijos[f][c];
     }
 
     public int getErrores() {
@@ -30,40 +30,58 @@ public class SudokuLogica extends LogicaAbstract {
         errores = 0;
     }
 
-    public boolean set(int row, int col, int val) {
-        if (predeterminado[row][col]) {
+    public boolean asignar(int f, int c, int v) {
+        if (fijos[f][c]) {
             errores++;
             JOptionPane.showMessageDialog(null, "No puedes cambiar una casilla fija.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        if (val != Solucion[row][col]) {
+        if (v != solucion[f][c]) {
             errores++;
             JOptionPane.showMessageDialog(null, "Número incorrecto. Intenta otro.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        tablero[row][col] = val;
+        tablero[f][c] = v;
         return true;
     }
 
-    public void clear() {
-
-    }
-
-    public void cargar(int[][] puzzle, int[][] sol) {
-
-    }
-
-    public boolean esValido(int row, int col, int val) {
+    public void generar(int pistas) {
+        resetErrores();
+        llenarTableroCompleto();
 
         for (int i = 0; i < 9; i++) {
-            if (tablero[row][i] == val || tablero[i][col] == val) {
+            System.arraycopy(tablero[i], 0, solucion[i], 0, 9);
+        }
+
+        quitarNumeros(81 - pistas);
+
+        for (int f = 0; f < 9; f++) {
+            for (int c = 0; c < 9; c++) {
+                fijos[f][c] = tablero[f][c] != 0;
+            }
+        }
+    }
+
+    public void limpiarEntradas() {
+        for (int f = 0; f < 9; f++) {
+            for (int c = 0; c < 9; c++) {
+                if (!fijos[f][c]) {
+                    tablero[f][c] = 0;
+                }
+            }
+        }
+    }
+
+    public boolean esValido(int f, int c, int v) {
+        for (int i = 0; i < 9; i++) {
+            if (tablero[f][i] == v || tablero[i][c] == v) {
                 return false;
             }
         }
-        int sr = (row/ 3) * 3, sc = (col / 3) * 3;
+        int sr = (f / 3) * 3, sc = (c / 3) * 3;
         for (int i = sr; i < sr + 3; i++) {
             for (int j = sc; j < sc + 3; j++) {
-                if (tablero[i][j] == val) {
+                if (tablero[i][j] == v) {
                     return false;
                 }
             }
@@ -71,20 +89,13 @@ public class SudokuLogica extends LogicaAbstract {
         return true;
     }
 
-    public boolean resuelto() {
-
-    }
-
-    public void revelarSolucion() {
-
-    }
-
-    public boolean rellenar() {
+    private void llenarTableroCompleto() {
+        tablero = new int[9][9];
         Random rand = new Random();
-        int row = 0, col = 0;
+        int f = 0, c = 0;
 
-        while (row < 9) {
-            if (Solucion[row][col] == 0) {
+        while (f < 9) {
+            if (tablero[f][c] == 0) {
                 boolean colocado = false;
                 int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -97,30 +108,68 @@ public class SudokuLogica extends LogicaAbstract {
 
                 for (int i = 0; i < numeros.length; i++) {
                     int v = numeros[i];
-                    if (esValido(row, col, v)) {
-                        Solucion[row][col] = v;
+                    if (esValido(f, c, v)) {
+                        tablero[f][c] = v;
                         colocado = true;
                         break;
                     }
                 }
 
                 if (!colocado) {
-                    Solucion[row][col] = 0;
-                    if (col == 0) {
-                        row--;
-                        col = 8;
+                    tablero[f][c] = 0;
+                    if (c == 0) {
+                        f--;
+                        c = 8;
                     } else {
-                        col--;
+                        c--;
                     }
                     continue;
                 }
             }
 
-            if (col == 8) {
-                row++;
-                col = 0;
+            if (c == 8) {
+                f++;
+                c = 0;
             } else {
-                col++;
+                c++;
+            }
+        }
+    }
+
+    private void quitarNumeros(int cuenta) {
+        Random rand = new Random();
+        int total = 81;
+        int[] indices = new int[total];
+        for (int i = 0; i < total; i++) {
+            indices[i] = i;
+        }
+
+        for (int i = 0; i < total; i++) {
+            int j = rand.nextInt(total);
+            int temp = indices[i];
+            indices[i] = indices[j];
+            indices[j] = temp;
+        }
+
+        int removed = 0;
+        for (int i = 0; i < total && removed < cuenta; i++) {
+            int idx = indices[i];
+            int r = idx / 9, c = idx % 9;
+            int backup = tablero[r][c];
+            if (backup == 0) {
+                continue;
+            }
+
+            tablero[r][c] = 0;
+        }
+    }
+
+    public boolean isComplete() {
+        for (int f = 0; f < 9; f++) {
+            for (int c = 0; c < 9; c++) {
+                if (tablero[f][c] == 0) {
+                    return false;
+                }
             }
         }
         return true;

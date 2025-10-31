@@ -88,29 +88,28 @@ public class SudokuLogica extends LogicaAbstract {
         return true;
     }
 
-    @Override
     protected void llenarTableroCompleto() {
         tablero = new int[9][9];
         resolver(0, 0);
     }
 
-    private boolean resolver(int f, int c) {
-        if (f == 9) {
+    private boolean resolver(int row, int col) {
+        if (row == 9) {
             return true;
         }
-        int nf = (c == 8) ? f + 1 : f;
-        int nc = (c + 1) % 9;
+        int nf = (col == 8) ? row+ 1 : row;
+        int nc = (col + 1) % 9;
 
         int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         mezclar(numeros);
 
         for (int v : numeros) {
-            if (esValido(f, c, v)) {
-                tablero[f][c] = v;
+            if (esValido(row, col, v)) {
+                tablero[row][col] = v;
                 if (resolver(nf, nc)) {
                     return true;
                 }
-                tablero[f][c] = 0;
+                tablero[row][col] = 0;
             }
         }
         return false;
@@ -121,30 +120,29 @@ public class SudokuLogica extends LogicaAbstract {
         int removidos = 0;
 
         while (removidos < cantidad) {
-            int f = rand.nextInt(9);
-            int c = rand.nextInt(9);
-            if (tablero[f][c] != 0) {
-                tablero[f][c] = 0;
+            int row = rand.nextInt(9);
+            int col = rand.nextInt(9);
+            if (tablero[row][col] != 0) {
+                tablero[row][col] = 0;
                 removidos++;
             }
         }
     }
 
-    private void mezclar(int[] arr) {
+    private void mezclar(int[] numeros) {
         Random rand = new Random();
-        for (int i = arr.length - 1; i > 0; i--) {
+        for (int i = numeros.length - 1; i > 0; i--) {
             int j = rand.nextInt(i + 1);
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
+            int temp = numeros[i];
+            numeros[i] = numeros[j];
+            numeros[j] = temp;
         }
     }
 
-    @Override
     public boolean isComplete() {
-        for (int f = 0; f < 9; f++) {
-            for (int c = 0; c < 9; c++) {
-                if (tablero[f][c] == 0) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (tablero[row][col] == 0) {
                     return false;
                 }
             }
